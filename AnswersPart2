@@ -1,1 +1,46 @@
+The size-limitation approach I chose is the Least Recently Used (LRU) Cache.
+It follows the principle of evicting the least recently used items from the cache when the cache size exceeds the specified capacity.
+This approach ensures that the most recently accessed items remain in the cache, 
+improving performance by reducing database reads for frequently accessed data.
 
+The reasons why i chose this approach 
+Efficient Use of Memory: By evicting the least recently used items, 
+the LRU cache ensures that the cache size remains within the specified capacity, 
+preventing memory overflow.
+Prioritizes Hot Data: The cache tends to keep the most frequently accessed data, improving cache hit rates and overall performance.
+Simple Implementation: Simple to implement and understand.
+
+Disadvantages of LRU Cache:
+
+Potentially Evicts Useful Data: In some cases, the least recently used item might still be useful in the future, 
+leading to cache misses and additional database reads.
+Overhead of Maintaining Access Order: Maintaining the order of access for cache eviction introduces some overhead, 
+although this is generally negligible compared to the benefits of caching.
+
+I considered concurrency and multi-threading aspects, as well as request collapsing, to ensure code consistency, 
+safety, and minimizing database access.
+
+Concurrency and Multi-threading:
+The LruCache class is designed to be thread-safe by using appropriate synchronization mechanisms.
+In "GetOrAddSemaphore" method, a lock is acquired on the _semaphores dictionary to ensure thread safety when accessing and modifying the dictionary.
+
+
+Request Collapsing:
+
+In the LruCache class, the _semaphores dictionary serves the aspect of request collapsing.
+When multiple concurrent requests arrive for the same key which is the same short Url, 
+we want to make sure that only one request fetches the data from the database,
+and the other requests wait for the first request to complete and retrieve the result from the cache. 
+
+In the GetLongUrl method of the UrlShortenerService, 
+when there is a request for a short URL, We check the cache to see if the long URL for the given short URL exist if true we return the long URL immediately - no database access
+if not: 
+The GetOrAddSemaphore method checks if a SemaphoreSlim instance already exists in the _semaphores dictionary for the given key.
+If it exists, it returns the existing SemaphoreSlim instance. 
+If not, it creates a new SemaphoreSlim instance with count of 1 (allowing only one thread to pass through at a time), 
+add to the _semaphores dictionary with the key, and return the new instance.
+In the GetLongUrl method, the first thread that acquires the semaphore (calling semaphore.Wait()) fetch the data from the database.
+Other threads attempting to fetch the same data (with the same key) will be blocked because of the semaphore.Wait() call until
+the first thread releases the semaphore after fetching the data and storing it in the cache.
+Once the first thread releases the semaphore, 
+one of the waiting threads acquires it and can retrieve the data from the cache without having to go to the DB.
