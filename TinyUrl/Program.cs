@@ -7,7 +7,8 @@ using TinyUrl.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IMongoDbFactory>(new MongoDbFactory(builder.Configuration.GetValue<string>("Database:ConnectionString"),
+builder.Services.AddSingleton<IMongoDbFactory>
+    (new MongoDbFactory(builder.Configuration.GetValue<string>("Database:ConnectionString"),
     builder.Configuration.GetValue<string>("Database:DatabaseName")));
 
 //builder.Services.AddSingleton<UrlShortenerService>();

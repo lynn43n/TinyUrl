@@ -17,16 +17,12 @@ leading to cache misses and additional database reads.
 Overhead of Maintaining Access Order: Maintaining the order of access for cache eviction introduces some overhead, 
 although this is generally negligible compared to the benefits of caching.
 
-
-
 I considered concurrency and multi-threading aspects, as well as request collapsing, to ensure code consistency, 
 safety, and minimizing database access.
 
 Concurrency and Multi-threading:
 The LruCache class is designed to be thread-safe by using appropriate synchronization mechanisms.
 In "GetOrAddSemaphore" method, a lock is acquired on the _semaphores dictionary to ensure thread safety when accessing and modifying the dictionary.
-The Set and TryGetValue methods are not explicitly synchronized because the operations on the LinkedList and Dictionary are thread-safe.
-
 
 
 Request Collapsing:

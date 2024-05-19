@@ -17,7 +17,7 @@ public class UrlShortenerController : ControllerBase
     public UrlShortenerController(IUrlMappingRepo urlMappings)
     {
         _urlMappings = urlMappings;
-        _urlShortenerService = new UrlShortenerService(_urlMappings, 100);
+        _urlShortenerService = new UrlShortenerService(_urlMappings, 1000);
     }
 
     [HttpPost("shorten")]

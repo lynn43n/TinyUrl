@@ -11,8 +11,6 @@ namespace TinyUrl.Database
         public MongoDbFactory(string connectionString, string databaseName)
         {
             var settings = MongoClientSettings.FromConnectionString(connectionString);
-           // settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-
             IMongoClient client = new MongoClient(settings);
             _database = client.GetDatabase(databaseName);
         }
